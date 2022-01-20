@@ -1,7 +1,53 @@
 <script>
-    let iin = ''
-    let login = ''
-    let password = ''
+    import { goto } from '$app/navigation'
+    let iinRegister = ''
+    let usernameRegister = ''
+    let passwordRegister = ''
+
+    let usernameLogin = ''
+    let passwordLogin = ''
+
+    async function doLogin() {
+        let myHeaders = new Headers()
+
+        let formdata = new FormData()
+        formdata.append('login', usernameLogin)
+        formdata.append('password', passwordLogin)
+
+        let requestOptions = {
+            method: 'POST',
+            credentials: 'include',
+            headers: myHeaders,
+            body: formdata,
+        }
+        fetch('http://localhost:8080/signin', requestOptions)
+            .then((response) => response.status)
+            .then((result) => {
+                if (result == 200) goto('/user')
+            })
+            .catch((error) => console.log('error', error))
+    }
+
+    async function doRegistration() {
+        let myHeaders = new Headers()
+
+        let formdata = new FormData()
+        formdata.append('login', usernameRegister)
+        formdata.append('password', passwordRegister)
+        formdata.append('iin', iinRegister)
+
+        let requestOptions = {
+            method: 'POST',
+            credentials: 'include',
+            headers: myHeaders,
+            body: formdata,
+        }
+
+        fetch('http://localhost:8080/signup', requestOptions)
+            .then((response) => response.status)
+            .then((result) => console.log(result))
+            .catch((error) => console.log('error', error))
+    }
 </script>
 
 <div class="container">
@@ -13,6 +59,7 @@
                 name="username"
                 id="signin-username"
                 placeholder="Имя пользователя"
+                bind:value={usernameLogin}
             />
             <input
                 type="password"
@@ -20,8 +67,9 @@
                 id="signin-password"
                 placeholder="Пароль"
                 class="last-input"
+                bind:value={passwordLogin}
             />
-            <button type="submit">Войти</button>
+            <button type="submit" on:click={doLogin}>Войти</button>
         </div>
     </div>
     <div class="form-box">
@@ -32,32 +80,39 @@
                 name="username"
                 id="signup-username"
                 placeholder="Имя пользователя"
+                bind:value={usernameRegister}
             />
             <input
                 type="password"
                 name="password"
                 id="signup-password"
                 placeholder="Пароль"
+                bind:value={passwordRegister}
             />
-            <input type="number" name="iin" id="signup-iin" placeholder="ИИН" class="last-input"/>
-            <button type="submit">Зарегистрироваться</button>
+            <input
+                type="number"
+                name="iin"
+                id="signup-iin"
+                placeholder="ИИН"
+                class="last-input"
+                bind:value={iinRegister}
+            />
+            <button type="submit" on:click={doRegistration}
+                >Зарегистрироваться</button
+            >
         </div>
     </div>
 </div>
 
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400&display=swap');
-    :global(body) {
-        background-color: rgb(240, 240, 240);
-        font-family: 'Roboto', sans-serif;
-        font-size: 14px;
-    }
+
     .container {
         display: flex;
         justify-content: center;
         align-items: center;
         width: 100%;
-        height: 100vh;
+        height: 80vh;
     }
     h1 {
         font-size: 40px;
@@ -111,7 +166,7 @@
         font-size: 17px;
         border-radius: 2px;
         margin: 10px auto 8px;
-        transition: all .2s ease-in-out;
+        transition: all 0.2s ease-in-out;
     }
     button:hover {
         background: #006aa0;
